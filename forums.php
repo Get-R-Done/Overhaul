@@ -488,15 +488,15 @@ You have no permission to view this forum.<br />
 			 <tr>
 				<td valign='top'>";
 		if ($memb['userid'] > 0) {
-			print "<a href='viewuser.php?u={$r['fp_poster_id']}'>{$r['fp_poster_name']}</a>
+			echo "<a href='viewuser.php?u={$r['fp_poster_id']}'>{$r['fp_poster_name']}</a>
                     	[{$r['fp_poster_id']}]<br />
                      $av<br />
                      $rank<br />
 					 Level: {$memb['level']}";
 		} else {
-			print "<b>Deleted User</b>";
+			echo "<b>Deleted User</b>";
 		}
-		print "</td>
+		echo "</td>
 			   	 <td valign='top'>
                     {$r['fp_text']}
                     {$edittext}<br />
