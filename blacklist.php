@@ -9,18 +9,10 @@ if (!isset($_GET['action'])) {
 	$_GET['action'] = '';
 }
 switch ($_GET['action']) {
-	case "add":
-		add_enemy();
-		break;
-	case "remove":
-		remove_enemy();
-		break;
-	case "ccomment":
-		change_comment();
-		break;
-	default:
-		black_list();
-		break;
+	case "add":add_enemy();break;
+	case "remove":remove_enemy();break;
+	case "ccomment":change_comment();break;
+	default:black_list();break;
 }
 function black_list()
 {
