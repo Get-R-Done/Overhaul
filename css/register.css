@@ -1,0 +1,71 @@
+@charset ISO-8859-1;
+
+body {
+margin-top:0;
+margin-bottom:0;
+font-family:Verdana, Arial, Helvetica, sans-serif;
+font-size:12px;
+background:#DEDEDE;
+}
+
+.lgrad {
+width:19px;
+background:url(../lgrad.jpg) repeat-y;
+}
+
+.linegrad {
+width:2px;
+background:url(../linegrad.PNG) repeat-y;
+}
+
+.rgrad {
+width:19px;
+background:url(../rgrad.jpg) repeat-y;
+}
+
+.dgrad {
+height:38px;
+background:url(../dgrad.jpg) repeat-x;
+}
+
+.dgradl {
+height:38px;
+width:38px;
+background:url(../dgradl.jpg) no-repeat;
+}
+
+.dgradr {
+height:38px;
+width:38px;
+background:url(../dgradr.jpg) no-repeat;
+}
+
+.center {
+width:932px;
+vertical-align:top;
+text-align:center;
+background:#FFF;
+}
+
+.table td {
+height:22px;
+background:#DEDEDE;
+}
+
+.table3 td {
+background:#CCC;
+}
+
+td .alt {
+height:22px;
+background:#EEE;
+}
+
+.table,.table3 {
+background:#000;
+}
+
+td .h,.table th {
+font-weight:700;
+background:#D6D6D6 url(../tablehgrad.png) repeat-x;
+}
