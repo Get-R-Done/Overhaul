@@ -9,7 +9,8 @@ class headers
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<link href="css/game.css" type="text/css" rel="stylesheet" />
+<link href="../css/game.css" type="text/css" rel="stylesheet" />
+<script src="../js/jquery-1.7.1.min.js"></script>
 <title><?php echo $set['game_name']?></title>
 </head>
 <body>
@@ -29,13 +30,13 @@ class headers
                  WHERE `userid` = $userid");
 		if (!$ir['email']) {
 			global $domain;
-			die("<body>Your account may be broken. Please mail help@{$domain} stating your username and player ID.");
+			error("<body>Your account may be broken. Please mail help@{$domain} stating your username and player ID.");
 		}
 		if (!isset($_SESSION['attacking'])) {
 			$_SESSION['attacking'] = 0;
 		}
 		if ($dosessh && ($_SESSION['attacking'] || $ir['attacking'])) {
-			echo "You lost all your EXP for running from the fight.";
+			warning('You lost all your EXP for running from the fight.');
 			$db->query("UPDATE `users`
                      SET `exp` = 0, `attacking` = 0
                      WHERE `userid` = $userid");
@@ -51,52 +52,43 @@ class headers
 		$exopp  = 100 - $experc;
 		$bropp  = 100 - $brperc;
 		$hpopp  = 100 - $hpperc;
-		$d      = "";
-		$u      = $ir['username'];
-		if ($ir['donatordays']) {
-			$u = "<span style='color: red;'>{$ir['username']}</span>";
-			$d = "<img src='donator.gif'
-                     alt='Donator: {$ir['donatordays']} Days Left'
-                     title='Donator: {$ir['donatordays']} Days Left' />";
-		}
-		$gn = "";
 		global $staffpage;
 ?>
-<img src="title.jpg" alt="Mccodes Version 2" /><br />
+<img src="image/layout/title.jpg" alt="Mccodes Version 2" /><br />
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
 <td width="20%" bgcolor="#FFFFFF" valign="top">
 <!-- Side Panel -->
-<b>Name:</b> <?php echo $gn?><?php echo $u?> [<?php echo $ir['userid']?>] $d<br />
+<b>Name:</b> <?php echo username($ir['userid'], true, true)?><br />
 <b>Money:</b> <?php echo $fm?><br />
-<b>Level:</b> <?php echo $ir['level']?><br />
-<b>Crystals:</b> <?php echo $ir['crystals']?><br />
+<b>Level:</b> <?php echo number_format($ir['level'])?><br />
+<b>Crystal<?php echo s($ir['crystals'])?>:</b> <?php echo number_format($ir['crystals'])?><br />
 [<a href='logout.php'>Emergency Logout</a>]
 <hr />
 <b>Energy:</b> <?php echo $enperc?>%<br />
-<img src='greenbar.png' width='<?php echo $enperc?>' height='10' alt='green bar' /><img src='redbar.png' alt='red bar' width='<?php echo $enopp ?>' height='10' /><br />
+<img src='image/bars/greenbar.png' width='<?php echo $enperc?>' height='10' alt='green bar' /><img src='image/bars/redbar.png' alt='red bar' width='<?php echo $enopp ?>' height='10' /><br />
 <b>Will:</b> <?php echo $wiperc ?>%<br />
-<img src='bluebar.png' width='<?php echo $wiperc?>' height='10' alt='blue bar' /><img src='redbar.png' alt='red bar' width='<?php echo $wiopp?>' height='10' /><br />
+<img src='image/bars/bluebar.png' width='<?php echo $wiperc?>' height='10' alt='blue bar' /><img src='image/bars/redbar.png' alt='red bar' width='<?php echo $wiopp?>' height='10' /><br />
 <b>Brave:</b> <?php echo $ir['brave']?>/<?php echo $ir['maxbrave']?><br />
-<img src='yellowbar.png' width='<?php echo $brperc?>' height='10' alt='yellow bar'/><img src='redbar.png' width='<?php echo $bropp?>' alt='red bar' height='10' /><br />
+<img src='image/bars/yellowbar.png' width='<?php echo $brperc?>' height='10' alt='yellow bar'/><img src='image/bars/redbar.png' width='<?php echo $bropp?>' alt='red bar' height='10' /><br />
 <b>EXP:</b> <?php echo $experc?>%<br />
-<img src='bluebar.png' width='<?php echo $experc?>' height='10' alt='blue bar' /><img src='redbar.png' width='<?php echo $exopp?>' alt='red bar' height='10' /><br />
+<img src='image/bars/bluebar.png' width='<?php echo $experc?>' height='10' alt='blue bar' /><img src='image/bars/redbar.png' width='<?php echo $exopp?>' alt='red bar' height='10' /><br />
 <b>Health:</b> <?php echo $hpperc?>%<br />
-<img src='greenbar.png' width='<?php echo $hpperc?>' height='10' alt='green bar' /><img src='redbar.png' width='<?php echo $hpopp?>' alt='red bar' height='10' /><br /><hr />
+<img src='image/bars/greenbar.png' width='<?php echo $hpperc?>' height='10' alt='green bar' /><img src='image/bars/redbar.png' width='<?php echo $hpopp?>' alt='red bar' height='10' /><br /><hr />
 <?php
 		if ($ir['fedjail'] > 0) {
 			$q = $db->query("SELECT *
                              FROM `fedjail`
                              WHERE `fed_userid` = $userid");
 			$r = $db->fetch_row($q);
-			die("<span style='font-weight: bold; color:red;'>
+			error("<span class='new'>
                     You have been put in the {$set['game_name']} Federal Jail
                      for {$r['fed_days']} day(s).<br />
                     Reason: {$r['fed_reason']}
                     </span></body></html>");
 		}
 		if (file_exists('ipbans/' . $IP)) {
-			die("<span style='font-weight: bold; color:red;'>
+			error("<span class='new'>
                     Your IP has been banned from {$set['game_name']},
                      there is no way around this.
                     </span></body></html>");
@@ -108,12 +100,10 @@ class headers
 		include 'mainmenu.php';
 		global $ir, $c;
 		echo '</td><td width="2" class="linegrad" bgcolor="#FFFFFF">&nbsp;</td><td width="80%"  bgcolor="#FFFFFF" valign="top"><br /><center>';
-		if ($ir['hospital']) {
-			echo "<b>NB:</b> You are currently in hospital for {$ir['hospital']} minutes.<br />";
-		}
-		if ($ir['jail']) {
-			echo "<b>NB:</b> You are currently in jail for {$ir['jail']} minutes.<br />";
-		}
+		if ($ir['hospital'])
+			info("<b>NB:</b> You are currently in hospital for {$ir['hospital']} minutes.<br />");
+		if ($ir['jail'])
+			info("<b>NB:</b> You are currently in jail for {$ir['jail']} minutes.<br />");
 		echo "<a href='donator.php'><b>Donate to {$set['game_name']} now for game benefits!</b></a><br />";
 	}
 	function smenuarea()
@@ -149,7 +139,7 @@ class headers
 </td>
 </tr>
 </table>
-                <?php $db->num_queries?>';queries <?php echo $query_extra?></center></body>
+                <?php echo $db->num_queries;?>queries <?php echo $query_extra?></center></body>
 </html>
 <?php
 	}
