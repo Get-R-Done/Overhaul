@@ -1,28 +1,27 @@
 <?php
 $atkpage = 1;
-require_once('globals.php');
+require_once(__DIR__ . '/core/globals.php');
 $_GET['ID']            = (isset($_GET['ID']) && is_numeric($_GET['ID'])) ? abs((int) $_GET['ID']) : 0;
 $_SESSION['attacking'] = 0;
 $ir['attacking']       = 0;
 $db->query("UPDATE `users` SET `attacking` = 0 WHERE `userid` = $userid");
 $od = $db->query("SELECT * FROM `users` WHERE `userid` = {$_GET['ID']} LIMIT 1");
-if (!isset($_SESSION['attackwon']) || $_SESSION['attackwon'] != $_GET['ID']) {
-	die("Cheaters don't get anywhere.");
-}
+if (!isset($_SESSION['attackwon']) || $_SESSION['attackwon'] != $_GET['ID'])
+	error("Cheaters don't get anywhere.");
 if ($db->num_rows($od) > 0) {
 	$r = $db->fetch_row($od);
 	$db->free_result($od);
-	if ($r['hp'] == 1) {
-		echo "What a cheater you are.";
-	} else {
-		echo "You beat {$r['username']}!!<br />
-You beat {$r['username']} severely on the ground. When there is lots of blood showing, you head up to the nearest 10-story building's roof and drop him over the edge. You run home silently and carefully.";
+	if ($r['hp'] == 1) 
+		error("What a cheater you are.");
+	 else {
+		echo "You beat ".name($r['userid'], true)."!!<br />
+You beat ".name($r['userid'], true, true)." severely on the ground. When there is lots of blood showing, you head up to the nearest 10-story building's roof and drop him over the edge. You run home silently and carefully.";
 		$hosptime   = rand(50, 150) + floor($ir['level'] / 2);
-		$hospreason = $db->escape("Hospitalized by <a href='viewuser.php?u={$userid}'>{$ir['username']}</a>");
+		$hospreason = $db->escape("Hospitalized by <a href='viewuser.php?u={$userid}'>".name($ir['userid'], true, true)."</a>");
 		$db->query("UPDATE `users` SET `hp` = 1, `hospital` = $hosptime,
                         `hospreason` = '{$hospreason}'
                         WHERE `userid` = {$r['userid']}");
-		event_add($r['userid'], "<a href='viewuser.php?u=$userid'>{$ir['username']}</a> beat you up.", $c);
+		event_add($r['userid'], "".username($r['userid'], true)." beat you up.", $c);
 		$atklog = $db->escape($_SESSION['attacklog']);
 		$db->query("INSERT INTO `attacklogs` VALUES(NULL, $userid, {$_GET['ID']},
                         'won', " . time() . ", -1, '$atklog')");
@@ -58,7 +57,7 @@ You beat {$r['username']} severely on the ground. When there is lots of blood sh
 				if ($db->fetch_single($qk) > 0) {
 					$m = $cb['cb_money'];
 					$db->query("UPDATE `users` SET `money` = `money` + $m WHERE `userid` = $userid");
-					echo "<br /> You gained " . money_formatter($m) . " for beating the challenge bot {$r['username']}";
+					echo "<br /> You gained " . money_formatter($m) . " for beating the challenge bot ".name($r['userid'], true)."";
 					$db->query("INSERT INTO `challengesbeaten` VALUES($userid, {$r['userid']})");
 				}
 				$db->free_result($qk);
@@ -68,7 +67,7 @@ You beat {$r['username']} severely on the ground. When there is lots of blood sh
 	}
 } else {
 	$db->free_result($od);
-	echo "You beat Mr. non-existant!";
+	success("You beat Mr. non-existant!");
 }
 $h->endpage();
 ?>
