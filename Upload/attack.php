@@ -1,22 +1,17 @@
 <?php
 $menuhide = 1;
 $atkpage  = 1;
-require_once('globals.php');
+require_once(__DIR__ . '/core/globals.php');
 $_GET['ID'] = (isset($_GET['ID']) && is_numeric($_GET['ID'])) ? abs(intval($_GET['ID'])) : '';
-if (!$_GET['ID']) {
-	echo 'Invalid ID<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-} else if ($_GET['ID'] == $userid) {
-	echo 'you can\'t attack yourself.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-} else if ($ir['hp'] <= 1) {
-	echo 'You\'re unconcious therefore you can\'t attack.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-} else if (isset($_SESSION['attacklost']) && $_SESSION['attacklost'] == 1) {
+if (!$_GET['ID'])
+	error('Invalid ID<br />&gt; <a href="index.php">Go Home</a>');
+else if ($_GET['ID'] == $userid)
+	warning('you can\'t attack yourself.<br />&gt; <a href="index.php">Go Home</a>');
+else if ($ir['hp'] <= 1)
+	warning('You\'re unconcious therefore you can\'t attack.<br />&gt; <a href="index.php">Go Home</a>');
+else if (isset($_SESSION['attacklost']) && $_SESSION['attacklost'] == 1)
 	$_SESSION['attacklost'] = 0;
-	echo 'Only the losers of all their EXP attack when they\'ve already lost.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-}
+warning('Only the losers of all their EXP attack when they\'ve already lost.<br />&gt; <a href="index.php">Go Home</a>');
 $youdata   = $ir;
 $odata_sql = <<<SQL
 	SELECT `u`.`userid`, `hp`, `hospital`, `jail`, `equip_armor`, `username`,
@@ -29,8 +24,7 @@ $odata_sql = <<<SQL
 SQL;
 $q         = $db->query($odata_sql);
 if ($db->num_rows($q) == 0) {
-	echo 'That user doesn&#39;t exist<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	error('That user doesn&#39;t exist<br />&gt; <a href="index.php">Go Home</a>');
 }
 $odata = $db->fetch_row($q);
 $db->free_result($q);
@@ -38,8 +32,7 @@ $myabbr = ($ir['gender'] == "Male") ? "his" : "her";
 $oabbr  = ($odata['gender'] == "Male") ? "his" : "her";
 if ($ir['attacking'] && $ir['attacking'] != $_GET['ID']) {
 	$_SESSION['attacklost'] = 0;
-	echo 'Something went wrong.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	error('Something went wrong.<br />&gt; <a href="index.php">Go Home</a>');
 }
 $endattk_sql = <<<SQL
 	UPDATE `users`
@@ -50,38 +43,30 @@ if ($odata['hp'] == 1) {
 	$_SESSION['attacking'] = 0;
 	$ir['attacking']       = 0;
 	$db->query($endattk_sql);
-	echo 'This player is unconscious.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	warning('This player is unconscious.<br />&gt; <a href="index.php">Go Home</a>');
 } else if ($odata['hospital']) {
 	$_SESSION['attacking'] = 0;
 	$ir['attacking']       = 0;
 	$db->query($endattk_sql);
-	echo 'This player is in hospital.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	warning('This player is in hospital.<br />&gt; <a href="index.php">Go Home</a>');
 } else if ($ir['hospital']) {
 	$_SESSION['attacking'] = 0;
 	$ir['attacking']       = 0;
 	$db->query($endattk_sql);
-	echo 'While in hospital you can\'t attack.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	warning('While in hospital you can\'t attack.<br />&gt; <a href="index.php">Go Home</a>');
 } else if ($odata['jail']) {
 	$_SESSION['attacking'] = 0;
 	$ir['attacking']       = 0;
 	$db->query($endattk_sql);
-	echo 'This player is in jail.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	warning('This player is in jail.<br />&gt; <a href="index.php">Go Home</a>');
 } else if ($ir['jail']) {
 	$_SESSION['attacking'] = 0;
 	$ir['attacking']       = 0;
 	$db->query($endattk_sql);
-	echo 'While in jail you can\'t attack.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
+	warning('While in jail you can\'t attack.<br />&gt; <a href="index.php">Go Home</a>');
 }
-echo '
-<table width="100%">
-		<tr>
-	<td colspan="2" align="center">
-   ';
+echo '<table width="100%"><tr>
+<td colspan="2" align="center">';
 $_GET['wepid'] = (isset($_GET['wepid']) && is_numeric($_GET['wepid'])) ? abs(intval($_GET['wepid'])) : '';
 if ($_GET['wepid']) {
 	$_GET['nextstep'] = (isset($_GET['nextstep']) && is_numeric($_GET['nextstep'])) ? abs(intval($_GET['nextstep'])) : 1;
@@ -95,10 +80,8 @@ if ($_GET['wepid']) {
 			$db->query("UPDATE `users` SET `energy` = `energy` - {$cost} " . "WHERE `userid` = {$userid}");
 			$_SESSION['attacklog'] = '';
 			$_SESSION['attackdmg'] = 0;
-		} else {
-			echo 'You can only attack someone when you have 50% energy.<br />&gt; <a href="index.php">Go Home</a>';
-			die($h->endpage());
-		}
+		} else
+			warning('You can only attack someone when you have 50% energy.<br />&gt; <a href="index.php">Go Home</a>');
 	}
 	$_SESSION['attacking'] = 1;
 	$ir['attacking']       = $odata['userid'];
@@ -116,8 +99,7 @@ SQL;
         	WHERE `userid` = {$userid}
 SQL;
 		$db->query($abuse_sql);
-		echo 'Stop trying to abuse a game bug. You can lose all your EXP for that.<br />&gt; <a href="index.php">Go Home</a>';
-		die($h->endpage());
+		error('Stop trying to abuse a game bug. You can lose all your EXP for that.<br />&gt; <a href="index.php">Go Home</a>');
 	}
 	$winfo_sql = <<<SQL
     	SELECT `itmname`, `weapon`
@@ -127,8 +109,7 @@ SQL;
 SQL;
 	$qo        = $db->query($winfo_sql);
 	if ($db->num_rows($qo) == 0) {
-		echo 'That weapon doesn&#39;t exist...';
-		die($h->endpage());
+		error('That weapon doesn&#39;t exist...<br />&gt; <a href="index.php">Go Home</a>');
 	}
 	$r1 = $db->fetch_row($qo);
 	$db->free_result($qo);
@@ -166,12 +147,12 @@ SQL;
 			$mydamage += 1;
 		}
 		$db->query("UPDATE `users` SET `hp` = `hp` - $mydamage WHERE `userid` = {$_GET['ID']}");
-		echo "<font color=red>{$_GET['nextstep']}. Using your {$r1['itmname']} you hit {$odata['username']} doing $mydamage damage ({$odata['hp']})</font><br />\n";
+		echo "<span style='color:red'>{$_GET['nextstep']}. Using your {$r1['itmname']} you hit ".name($odata['userid'])." doing $mydamage damage ({$odata['hp']})</span><br />\n";
 		$_SESSION['attackdmg'] += $mydamage;
-		$_SESSION['attacklog'] .= "<font color=red>{$_GET['nextstep']}. Using {$myabbr} {$r1['itmname']} {$ir['username']} hit {$odata['username']} doing $mydamage damage ({$odata['hp']})</font><br />\n";
+		$_SESSION['attacklog'] .= "<span style='color:red'>{$_GET['nextstep']}. Using {$myabbr} {$r1['itmname']} ".name($ir['userid'])." hit ".name($odata['userid'])." doing $mydamage damage ({$odata['hp']})</span><br />\n";
 	} else {
-		echo "<font color=red>{$_GET['nextstep']}. You tried to hit {$odata['username']} but missed ({$odata['hp']})</font><br />\n";
-		$_SESSION['attacklog'] .= "<font color=red>{$_GET['nextstep']}. {$ir['username']} tried to hit {$odata['username']} but missed ({$odata['hp']})</font><br />\n";
+		echo "<span style='color:red'>{$_GET['nextstep']}. You tried to hit ".name($odata['userid'])." but missed ({$odata['hp']})</span><br />\n";
+		$_SESSION['attacklog'] .= "<span style='color:red'>{$_GET['nextstep']}. ".name($ir['userid'])." tried to hit ".name($odata['userid'])." but missed ({$odata['hp']})</span><br />\n";
 	}
 	if ($odata['hp'] <= 0) {
 		$odata['hp']           = 0;
@@ -179,7 +160,7 @@ SQL;
 		$db->query("UPDATE `users` SET `hp` = 0 WHERE `userid` = {$_GET['ID']}");
 		echo "
 <br />
-<b>What do you want to do with {$odata['username']} now?</b><br />
+<b>What do you want to do with ".name($odata['userid'], true, true)." now?</b><br />
 <form action='attackwon.php?ID={$_GET['ID']}' method='post'><input type='submit' value='Mug Them' /></form>
 <form action='attackbeat.php?ID={$_GET['ID']}' method='post'><input type='submit' value='Hospitalize Them' /></form>
 <form action='attacktake.php?ID={$_GET['ID']}' method='post'><input type='submit' value='Leave Them' /></form>
@@ -228,12 +209,12 @@ SQL;
 			}
 			$db->query("UPDATE `users` SET `hp` = `hp` - $dam WHERE `userid` = $userid");
 			$ns = $_GET['nextstep'] + 1;
-			echo "<font color=blue>{$ns}. Using $oabbr $wep {$odata['username']} hit you doing $dam damage ({$youdata['hp']})</font><br />\n";
-			$_SESSION['attacklog'] .= "<font color=blue>{$ns}. Using $oabbr $wep {$odata['username']} hit {$ir['username']} doing $dam damage ({$youdata['hp']})</font><br />\n";
+			echo "<span style='color:blue'>{$ns}. Using $oabbr $wep ".name($odata['userid'])." hit you doing $dam damage ({$youdata['hp']})</span><br />\n";
+			$_SESSION['attacklog'] .= "<span style='color:blue'>{$ns}. Using $oabbr $wep ".name($odata['userid'])." hit ".name($ir['userid'])." doing $dam damage ({$youdata['hp']})</span><br />\n";
 		} else {
 			$ns = $_GET['nextstep'] + 1;
-			echo "<font color=red>{$ns}. {$odata['username']} tried to hit you but missed ({$youdata['hp']})</font><br />\n";
-			$_SESSION['attacklog'] .= "<font color=blue>{$ns}. {$odata['username']} tried to hit {$ir['username']} but missed ({$youdata['hp']})</font><br />\n";
+			echo "<span style='color:red'>{$ns}. ".name($odata['userid'])." tried to hit you but missed ({$youdata['hp']})</span><br />\n";
+			$_SESSION['attacklog'] .= "<span style='color:blue'>{$ns}. ".name($odata['userid'])." tried to hit ".name($ir['userid'])." but missed ({$youdata['hp']})</span><br />\n";
 		}
 		if ($youdata['hp'] <= 0) {
 			$youdata['hp']          = 0;
@@ -242,23 +223,15 @@ SQL;
 			echo "<form action='attacklost.php?ID={$_GET['ID']}' method='post'><input type='submit' value='Continue' />";
 		}
 	}
-} else if ($odata['hp'] < 5) {
-	echo 'You can only attack those who have health.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-} else if ($ir['gang'] == $odata['gang'] && $ir['gang'] > 0) {
-	echo 'You are in the same gang as ' . $odata['username'] . '! What are you smoking today dude!<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-} else if ($youdata['energy'] < $youdata['maxenergy'] / 2) {
-	echo 'You can only attack someone when you have 50% energy.<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-} else if ($youdata['location'] != $odata['location']) {
-	echo 'You can only attack someone in the same location!<br />&gt; <a href="index.php">Go Home</a>';
-	die($h->endpage());
-}
-echo '
-	</td>
-		</tr>
-   ';
+} else if ($odata['hp'] < 5)
+	warning('You can only attack those who have health.<br />&gt; <a href="index.php">Go Home</a>');
+else if ($ir['gang'] == $odata['gang'] && $ir['gang'] > 0)
+	warning('You are in the same gang as '.name($odata['userid']).'! What are you smoking today dude!<br />&gt; <a href="index.php">Go Home</a>');
+else if ($youdata['energy'] < $youdata['maxenergy'] / 2)
+	warning('You can only attack someone when you have 50% energy.<br />&gt; <a href="index.php">Go Home</a>');
+else if ($youdata['location'] != $odata['location'])
+	warning('You can only attack someone in the same location!<br />&gt; <a href="index.php">Go Home</a>');
+echo '</td></tr>';
 if ($youdata['hp'] <= 0 OR $odata['hp'] <= 0) {
 	echo '</table>';
 } else {
@@ -267,10 +240,7 @@ if ($youdata['hp'] <= 0 OR $odata['hp'] <= 0) {
 	$vars2['hpperc'] = round($odata['hp'] / $odata['maxhp'] * 100);
 	$vars2['hpopp']  = 100 - $vars2['hpperc'];
 	$mw              = $db->query("SELECT `itmid`,`itmname` FROM  `items`  WHERE `itmid` IN({$ir['equip_primary']}, {$ir['equip_secondary']})");
-	echo '
-		<tr>
-	<td colspan="2" align="center">Attack with:<br />
-   ';
+	echo '<tr><td colspan="2" align="center">Attack with:<br />';
 	if ($db->num_rows($mw) > 0) {
 		while ($r = $db->fetch_row($mw)) {
 			if (!isset($_GET['nextstep'])) {
@@ -286,12 +256,20 @@ if ($youdata['hp'] <= 0 OR $odata['hp'] <= 0) {
 			}
 			echo "<a href='attack.php?nextstep=$ns&amp;ID={$_GET['ID']}&amp;wepid={$r['itmid']}'>{$r['itmname']}</a><br />";
 		}
-	} else {
-		echo "You have nothing to fight with.";
-	}
+	} else
+		warning('You have nothing to fight with.<br />&gt; <a href="index.php">Go Home</a>');
 	$db->free_result($mw);
 	echo "</table>";
-	echo "<table width='50%' align='center'><tr><td align=right>Your Health: </td><td><img src=greenbar.png width={$vars['hpperc']} height=10><img src=redbar.png width={$vars['hpopp']} height=10></td><tr><td align=right>Opponents Health:  </td><td><img src=greenbar.png width={$vars2['hpperc']} height=10><img src=redbar.png width={$vars2['hpopp']} height=10></td></tr></table>";
+	echo "
+	<table width='50%' align='center'>
+		<tr>
+			<td align=right>Your Health: </td>
+			<td><img src=image/bars/greenbar.png width={$vars['hpperc']} height=10><img src=image/bars/redbar.png width={$vars['hpopp']} height=10></td>
+		<tr>
+			<td align=right>Opponents Health:  </td>
+			<td><img src=image/bars/greenbar.png width={$vars2['hpperc']} height=10><img src=image/bars/redbar.png width={$vars2['hpopp']} height=10></td>
+		</tr>
+	</table>";
 }
 $h->endpage();
 ?>
