@@ -17,6 +17,7 @@ text-decoration:none;
 table,tr,td {
 font-family:helvetica, arial, geneva, sans-serif;
 font-size:12px;
+vertical-align:text-top;
 }
 
 img {
@@ -31,34 +32,34 @@ color:#000;
 
 .lgrad {
 width:19px;
-background:url(../lgrad.jpg) repeat-y;
+background:url(../image/layout/lgrad.jpg) repeat-y;
 }
 
 .linegrad {
 width:2px;
-background:url(../linegrad.PNG) repeat-y;
+background:url(../image/layout/linegrad.PNG) repeat-y;
 }
 
 .rgrad {
 width:19px;
-background:url(../rgrad.jpg) repeat-y;
+background:url(../image/layout/rgrad.jpg) repeat-y;
 }
 
 .dgrad {
 height:38px;
-background:url(../dgrad.jpg) repeat-x;
+background:url(../image/layout/dgrad.jpg) repeat-x;
 }
 
 .dgradl {
 height:38px;
 width:38px;
-background:url(../dgradl.jpg) no-repeat;
+background:url(../image/layout/dgradl.jpg) no-repeat;
 }
 
 .dgradr {
 height:38px;
 width:38px;
-background:url(../dgradr.jpg) no-repeat;
+background:url(../image/layout/dgradr.jpg) no-repeat;
 }
 
 .center {
@@ -88,5 +89,41 @@ background:#000;
 
 td .h,.table th {
 font-weight:700;
-background:#D6D6D6 url(../tablehgrad.png) repeat-x;
+background:#D6D6D6 url(../image/layout/tablehgrad.png) repeat-x;
+}
+
+.new {
+    color: red;
+	font-weight:bold
+}
+.info,.success,.warning,.error,.validation {
+border:1px;
+background:no-repeat 10px;
+margin:10px;
+padding:15px;
+repeat-x
+}
+
+.info {
+color:#00529B;
+background:#BDE5F8 url(../image/info/info.png) no-repeat left center;
+}
+
+.success {
+color:#4F8A10;
+background:#DFF2BF url(../image/info/success.png) no-repeat left center;
+}
+
+.warning {
+color:#9F6000;
+background:#FEEFB3 url(../image/info/warning.png) no-repeat left center;
+}
+
+.error {
+color:#D8000C;
+background:#FFBABA url(../image/info/error.png) no-repeat left center;
+}
+ label {
+display: inline-block;
+width: 5em;
 }
