@@ -1,6 +1,6 @@
 <?php
 $atkpage = 1;
-require_once('globals.php');
+require_once(__DIR__ . '/core/globals.php');
 $_GET['ID']             = (isset($_GET['ID']) && is_numeric($_GET['ID'])) ? abs((int) $_GET['ID']) : 0;
 $_SESSION['attacking']  = 0;
 $_SESSION['attacklost'] = 0;
@@ -8,13 +8,13 @@ $od                     = $db->query("SELECT `username`, `level`, `gang` FROM `u
 if ($db->num_rows($od) > 0) {
 	$r = $db->fetch_row($od);
 	$db->free_result($od);
-	echo "You lost to {$r['username']}";
+	echo "You lost to ".name($r['userid'], true)."";
 	$expgain  = abs(($ir['level'] - $r['level']) ^ 3);
 	$expgainp = $expgain / $ir['exp_needed'] * 100;
 	echo " and lost $expgainp% EXP!";
 	$newexp = max($ir['exp'] - $expgain, 0);
 	$db->query("UPDATE `users` SET `exp` = {$newexp}, `attacking` = 0 WHERE `userid` = $userid");
-	event_add($r['userid'], "<a href='viewuser.php?u=$userid'>{$ir['username']}</a> attacked you and lost.", $c);
+	event_add($r['userid'], "".username($r['userid'], true)." attacked you and lost.", $c);
 	$atklog = $db->escape($_SESSION['attacklog']);
 	$db->query("INSERT INTO `attacklogs` VALUES(NULL, $userid, {$_GET['ID']},
                     'lost', " . time() . ", 0, '$atklog')");
@@ -32,7 +32,7 @@ if ($db->num_rows($od) > 0) {
 	}
 } else {
 	$db->free_result($od);
-	echo "You lost to Mr. Non-existant! =O";
+	success('You lost to Mr. Non-existant! =O');
 }
 $h->endpage();
 ?>
