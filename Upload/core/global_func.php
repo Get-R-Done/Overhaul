@@ -1011,4 +1011,92 @@ function get_filesize_remote($url)
 	}
 	return (int) $headers['content-length'];
 }
+/*
+This function will fetch the real IP address of the user even if he is behind a proxy server.
+*/
+function IP() {
+	if(preg_match("/^([d]{1,3}).([d]{1,3}).([d]{1,3}).([d]{1,3})$/", getenv('HTTP_X_FORWARDED_FOR')))
+		return getenv('HTTP_X_FORWARDED_FOR');
+	return getenv('REMOTE_ADDR');
+}
+	function error($msg) {
+		global $h;
+		echo "<div class='error'><strong>ERROR:</strong><br />",$msg,"</div>";
+		$h->endpage();
+		exit;
+	}
+	function warning($msg) {
+		global $h;
+		echo "<div class='warning'><strong>WARNING:</strong><br />",$msg,"</div>";
+		$h->endpage();
+		exit;
+	}
+	function success($msg) {
+		global $h;
+		echo "<div class='success'><strong>SUCCESS:</strong><br />",$msg,"</div>";
+		$h->endpage();
+		exit;
+	}
+	function info($msg) {
+		global $h;
+		echo "<div class='info'><strong>INFO:</strong><br />",$msg,"</div>";
+	}
+	function format($str, $dec = 0) {
+		return is_numeric($str) ? number_format($str, $dec) : stripslashes(htmlspecialchars($str));
+	}
+
+	function s($num) {
+		return $num == 1 ? '' : 's';
+	}
+
+	function userOnline($id) {
+		global $db;
+		if(!$id)
+			return 'Unknown';
+		$selectUser = $db->query("SELECT `laston` FROM `users` WHERE `userid` = ".$id);
+		if(!$db->num_rows($selectUser))
+			return 'Unknown';
+		$lastAction = $db->fetch_single($selectUser);
+		return ($lastAction > time()  - 900) 
+					? " <img src='http://image.mobilesuitwars.com/silk/user_green.png' title='Online' alt='Online' />"
+					: " <img src='http://image.mobilesuitwars.com/silk/user_gray.png' title='Offline' alt='Offline' />";
+	}
+
+	function username($id, $showID = false, $showIcon = false, $showOnline = false) {
+		global $db;
+		if(!$id)
+			return 'Unknown';
+		$selectUser = $db->query("SELECT `username`, `user_level`, `donatordays` FROM `users` WHERE `userid` = ".$id);
+		if(!$db->num_rows($selectUser))
+			return 'Unknown';
+		$user = $db->fetch_row($selectUser);
+		if($user['user_level'] == 0)
+			$ret = "<span style='color:#444;' title='NPC'>".format($user['username'])."</span>";
+		else if($user['user_level'] == 1) {
+			if($user['donatordays'])
+				$ret = "<a href='viewuser.php?u=".$id."' style='color:#F00;' title='Donator: ".format($user['donatordays'])." Day".s($user['donatordays'])." Left'>".format($user['username'])."</a>";
+			else
+				$ret = "<a href='viewuser.php?u=".$id."'>".format($user['username'])."</a>";
+		} else if($user['user_level'] == 2)
+			$ret = "<a href='viewuser.php?u=".$id."' style='color:#302B54;' title='Administrator'>".format($user['username'])."</a>";
+		else if($user['user_level'] == 3)
+			$ret = "<a href='viewuser.php?u=".$id."' style='color:#2F4F4F;' title='Secretary'>".format($user['username'])."</a>";
+		else if($user['user_level'] == 5)
+			$ret = "<a href='viewuser.php?u=".$id."' style='color:#26466D;' title='Assistant'>".format($user['username'])."</a>";
+		if($showID)
+			$ret .= " [".$id."]";
+		if($showIcon) {
+			if($user['donatordays'])
+				$ret .= " <img src='http://image.mobilesuitwars.com/Layout/donator.gif' title='Donator: ".format($user['donatordays'])." Day".s($user['donatordays'])." Left' alt='Donator: ".format($user['donatordays'])." Day".s($user['donatordays'])." Left' />";
+			if($user['user_level'] == 2)
+				$ret .= " <img src='http://image.mobilesuitwars.com/silk/bullet_black.png' title='Administrator' />";
+			else if($user['user_level'] == 3)
+				$ret .= " <img src='http://image.mobilesuitwars.com/silk/bullet_blue.png' title='Secretary' />";
+			else if($user['user_level'] == 5)
+				$ret .= " <img src='http://image.mobilesuitwars.com/silk/bullet_orange.png' title='Assistant' />";
+		}
+		if($showOnline)
+			$ret .= userOnline($id);
+		return $ret;
+	}
 ?>
