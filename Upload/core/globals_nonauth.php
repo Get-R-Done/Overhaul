@@ -23,12 +23,12 @@ if (get_magic_quotes_gpc() == 0) {
 		$_GET[$k] = addslashes($v);
 	}
 }
-require "lib/basic_error_handler.php";
+require_once(__DIR__ . '/lib/basic_error_handler.php');
 set_error_handler('error_php');
-include "config.php";
+include_once(__DIR__ . '/config.php');
 define("MONO_ON", 1);
-require "class/class_db_{$_CONFIG['driver']}.php";
-require_once('global_func.php');
+require_once(__DIR__ . '/class/class_db_mysqli.php');
+require_once(__DIR__ . '/global_func.php');
 $db = new database;
 $db->configure($_CONFIG['hostname'], $_CONFIG['username'], $_CONFIG['password'], $_CONFIG['database'], $_CONFIG['persistent']);
 $db->connect();
