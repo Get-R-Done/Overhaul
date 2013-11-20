@@ -6,7 +6,7 @@
  * which e.g. logs raw error data somewhere for admin assessment
  */
 // Change to true to show the user more information (for development)
-define('DEBUG', false);
+define('DEBUG', true);
 function error_critical($human_error, $debug_error, $action, $context = array())
 {
 	// Clear anything that was going to be shown
