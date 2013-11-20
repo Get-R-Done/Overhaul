@@ -4,13 +4,13 @@ class headers
 	function startheaders()
 	{
 		global $ir, $set;
-		echo <<<EOF
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <link href="css/game.css" type="text/css" rel="stylesheet" />
-<title>{$set['game_name']}</title>
+<title><?php echo $set['game_name']?></title>
 </head>
 <body>
 <center>
@@ -18,12 +18,12 @@ class headers
 <tr>
 <td class="lgrad"></td>
 <td class="center">
-EOF;
+<?php
 	}
 	function userdata($ir, $lv, $fm, $cm, $dosessh = 1)
 	{
 		global $db, $c, $userid, $set;
-		$IP = $db->escape($_SERVER['REMOTE_ADDR']);
+		$IP = IP();
 		$db->query("UPDATE `users`
                  SET `laston` = {$_SERVER['REQUEST_TIME']}, `lastip` = '$IP'
                  WHERE `userid` = $userid");
@@ -61,32 +61,29 @@ EOF;
 		}
 		$gn = "";
 		global $staffpage;
-		$bgcolor = 'FFFFFF';
-		print <<<OUT
+?>
 <img src="title.jpg" alt="Mccodes Version 2" /><br />
-<!-- Begin Main Content -->
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
-<td width="20%" bgcolor="#$bgcolor" valign="top">
+<td width="20%" bgcolor="#FFFFFF" valign="top">
 <!-- Side Panel -->
-<b>Name:</b> $gn{$u} [{$ir['userid']}] $d<br />
-<b>Money:</b> {$fm}<br />
-<b>Level:</b> {$ir['level']}<br />
-<b>Crystals:</b> {$ir['crystals']}<br />
+<b>Name:</b> <?php echo $gn?><?php echo $u?> [<?php echo $ir['userid']?>] $d<br />
+<b>Money:</b> <?php echo $fm?><br />
+<b>Level:</b> <?php echo $ir['level']?><br />
+<b>Crystals:</b> <?php echo $ir['crystals']?><br />
 [<a href='logout.php'>Emergency Logout</a>]
 <hr />
-<b>Energy:</b> {$enperc}%<br />
-<img src='greenbar.png' width='$enperc' height='10' /><img src='redbar.png' width='$enopp' height='10' /><br />
-<b>Will:</b> {$wiperc}%<br />
-<img src='bluebar.png' width='$wiperc' height='10' /><img src='redbar.png' width='$wiopp' height='10' /><br />
-<b>Brave:</b> {$ir['brave']}/{$ir['maxbrave']}<br />
-<img src='yellowbar.png' width='$brperc' height='10' /><img src='redbar.png' width='$bropp' height='10' /><br />
-<b>EXP:</b> {$experc}%<br />
-<img src='navybar.png' width='$experc' height='10' /><img src='redbar.png' width='$exopp' height='10' /><br />
-<b>Health:</b> {$hpperc}%<br />
-<img src='greenbar.png' width='$hpperc' height='10' /><img src='redbar.png' width='$hpopp' height='10' /><br /><hr />
-<!-- Links -->
-OUT;
+<b>Energy:</b> <?php echo $enperc?>%<br />
+<img src='greenbar.png' width='<?php echo $enperc?>' height='10' alt='green bar' /><img src='redbar.png' alt='red bar' width='<?php echo $enopp ?>' height='10' /><br />
+<b>Will:</b> <?php echo $wiperc ?>%<br />
+<img src='bluebar.png' width='<?php echo $wiperc?>' height='10' alt='blue bar' /><img src='redbar.png' alt='red bar' width='<?php echo $wiopp?>' height='10' /><br />
+<b>Brave:</b> <?php echo $ir['brave']?>/<?php echo $ir['maxbrave']?><br />
+<img src='yellowbar.png' width='<?php echo $brperc?>' height='10' alt='yellow bar'/><img src='redbar.png' width='<?php echo $bropp?>' alt='red bar' height='10' /><br />
+<b>EXP:</b> <?php echo $experc?>%<br />
+<img src='bluebar.png' width='<?php echo $experc?>' height='10' alt='blue bar' /><img src='redbar.png' width='<?php echo $exopp?>' alt='red bar' height='10' /><br />
+<b>Health:</b> <?php echo $hpperc?>%<br />
+<img src='greenbar.png' width='<?php echo $hpperc?>' height='10' alt='green bar' /><img src='redbar.png' width='<?php echo $hpopp?>' alt='red bar' height='10' /><br /><hr />
+<?php
 		if ($ir['fedjail'] > 0) {
 			$q = $db->query("SELECT *
                              FROM `fedjail`
@@ -110,8 +107,7 @@ OUT;
 		define('jdsf45tji', true, true);
 		include 'mainmenu.php';
 		global $ir, $c;
-		$bgcolor = 'FFFFFF';
-		echo '</td><td width="2" class="linegrad" bgcolor="#' . $bgcolor . '">&nbsp;</td><td width="80%"  bgcolor="#' . $bgcolor . '" valign="top"><br /><center>';
+		echo '</td><td width="2" class="linegrad" bgcolor="#FFFFFF">&nbsp;</td><td width="80%"  bgcolor="#FFFFFF" valign="top"><br /><center>';
 		if ($ir['hospital']) {
 			echo "<b>NB:</b> You are currently in hospital for {$ir['hospital']} minutes.<br />";
 		}
@@ -125,8 +121,7 @@ OUT;
 		define('jdsf45tji', true, true);
 		include 'smenu.php';
 		global $ir, $c;
-		$bgcolor = 'FFFFFF';
-		echo '</td><td width="2" class="linegrad" bgcolor="#' . $bgcolor . '">&nbsp;</td><td width="80%"  bgcolor="#' . $bgcolor . '" valign="top"><center>';
+		echo '</td><td width="2" class="linegrad" bgcolor="#FFFFFF">&nbsp;</td><td width="80%"  bgcolor="#FFFFFF" valign="top"><center>';
 	}
 	function endpage()
 	{
@@ -135,7 +130,7 @@ OUT;
 		if (isset($_GET['mysqldebug']) && $ir['user_level'] == 2) {
 			$query_extra = '<br />' . implode('<br />', $db->queries);
 		}
-		print <<<OUT
+?>
 </center>
 </td>
 </tr>
@@ -154,9 +149,9 @@ OUT;
 </td>
 </tr>
 </table>
-                {$db->num_queries} queries{$query_extra}</body>
+                <?php $db->num_queries?>';queries <?php echo $query_extra?></center></body>
 </html>
-OUT;
+<?php
 	}
 }
 ?>
